@@ -6,7 +6,7 @@ from torch.autograd import Variable
 class CNN(nn.Module):
     def __init__(self, num_filters, k_size, att=100):
         super(CNN, self).__init__()
-        self.conv1 = nn.Sequential(  # nn.Sequential 一个 有序 的容器；把特定神经网络模块按照在传入构造器的顺序依次被添加到计算图中
+        self.conv1 = nn.Sequential(  
             # Number of filters in encoder ：32*1;32*2;32*3
             nn.Conv1d(in_channels=128, out_channels=num_filters * 2, kernel_size=k_size, stride=1, padding=k_size // 2),
         )
@@ -18,7 +18,7 @@ class CNN(nn.Module):
             nn.Dropout(0.2), # 0.2->0.5
             nn.Conv1d(num_filters * 2, num_filters * 6, k_size, 1, k_size // 2),
         )
-        self.out = nn.AdaptiveAvgPool1d(1)  # 自适应均值池化层
+        self.out = nn.AdaptiveAvgPool1d(1)  
         self.layer1 = nn.Sequential(
             nn.Linear(num_filters * 3, num_filters * 3),
             nn.ReLU()
@@ -27,18 +27,15 @@ class CNN(nn.Module):
             nn.Linear(num_filters * 3, num_filters * 3),
             nn.ReLU()
         )
-    # 重参数技巧
     def reparametrize(self, mean, logvar):
-        # 所有带"_"都是inplace的 意思就是操作后 原数也会改动
-        # 不带 "_" 的 只在操作适时候改变数据，操作结束后数据变回原状
-        std = logvar.mul(0.5).exp_()  # mul:logvar中的每一个元素/2 ; std标准差
-        eps = torch.cuda.FloatTensor(std.size()).normal_(0, 0.1)  # 产生正态分布
+        std = logvar.mul(0.5).exp_()  
+        eps = torch.cuda.FloatTensor(std.size()).normal_(0, 0.1)  # a normal distribution
         eps = Variable(eps)
-        return eps.mul(std).add_(mean)  # z = u + δ * α；1. 【*】是每个元素对应相乘2. α 服从标准正态分布
+        return eps.mul(std).add_(mean)  # z = u + δ * α；1. 
     def forward(self, x):
-        x = self.conv1(x)  # a = np.array([[1,2,3],[4,5,6]]) ==》np.size(a)==》6，若np.size(a,1)==》3； 其中axis=0/1按行/列统计个数
+        x = self.conv1(x)  
         out, gate = x.split(int(x.size(1) / 2), 1)
-        x = out * torch.sigmoid(gate)  # 门控卷积 注意 * 符号，看论文
+        x = out * torch.sigmoid(gate)  
 
         x = self.conv2(x)
         out, gate = x.split(int(x.size(1) / 2), 1)
@@ -48,18 +45,17 @@ class CNN(nn.Module):
         out, gate = x.split(int(x.size(1) / 2), 1)
         x = out * torch.sigmoid(gate)
 
-        output = self.out(x)  # 调用了上面的方法：nn.AdaptiveAvgPool1d(1)  # 自适应均值池化层
-        output = output.squeeze()  # 移除数组中维度为1的维度 例如：(1,3,1)==>(3,)
+        output = self.out(x)  
+        output = output.squeeze()  
 
-        output1 = self.layer1(output)  # 第一个 full-connect 得到 均值u
-        output2 = self.layer2(output)  # 第二个 full-connect 得到 对数的方差 log δ^2
-        output = self.reparametrize(output1, output2)  # 重参数技巧：z = u + δ * α
+        output1 = self.layer1(output)  
+        output2 = self.layer2(output)  
+        output = self.reparametrize(output1, output2)  # z = u + δ * α
         return output, output1, output2
 class CNN_my(nn.Module):
     def __init__(self, num_filters, k_size, att=100):
         super(CNN_my, self).__init__()
-        self.conv1 = nn.Sequential(  # nn.Sequential 一个 有序 的容器；把特定神经网络模块按照在传入构造器的顺序依次被添加到计算图中
-            # Number of filters in encoder ：32*1;32*2;32*3
+        self.conv1 = nn.Sequential(  
             nn.Conv1d(in_channels=128, out_channels=num_filters * 2, kernel_size=k_size, stride=1, padding=k_size // 2),
         )
         self.conv2 = nn.Sequential(
@@ -70,7 +66,7 @@ class CNN_my(nn.Module):
             nn.Dropout(0.2), # 0.2->0.5
             nn.Conv1d(num_filters * 2, num_filters * 6, k_size, 1, k_size // 2),
         )
-        self.out = nn.AdaptiveAvgPool1d(1)  # 自适应均值池化层
+        self.out = nn.AdaptiveAvgPool1d(1)  
         self.layer1 = nn.Sequential(
             nn.Linear(num_filters * 3, num_filters * 3),
             nn.ReLU()
@@ -79,18 +75,17 @@ class CNN_my(nn.Module):
             nn.Linear(num_filters * 3, num_filters * 3),
             nn.ReLU()
         )
-    # 重参数技巧
+    
     def reparametrize(self, mean, logvar):
-        # 所有带"_"都是inplace的 意思就是操作后 原数也会改动
-        # 不带 "_" 的 只在操作适时候改变数据，操作结束后数据变回原状
-        std = logvar.mul(0.5).exp_()  # mul:logvar中的每一个元素/2 ; std标准差
-        eps = torch.cuda.FloatTensor(std.size()).normal_(0, 0.1)  # 产生正态分布
+        
+        std = logvar.mul(0.5).exp_()  
+        eps = torch.cuda.FloatTensor(std.size()).normal_(0, 0.1)  
         eps = Variable(eps)
-        return eps.mul(std).add_(mean)  # z = u + δ * α；1. 【*】是每个元素对应相乘2. α 服从标准正态分布
+        return eps.mul(std).add_(mean)  
     def forward(self, x):
-        x = self.conv1(x)  # a = np.array([[1,2,3],[4,5,6]]) ==》np.size(a)==》6，若np.size(a,1)==》3； 其中axis=0/1按行/列统计个数
+        x = self.conv1(x)  
         out, gate = x.split(int(x.size(1) / 2), 1)
-        x = out * torch.sigmoid(gate)  # 门控卷积 注意 * 符号，看论文
+        x = out * torch.sigmoid(gate)  
 
         x = self.conv2(x)
         out, gate = x.split(int(x.size(1) / 2), 1)
@@ -100,12 +95,12 @@ class CNN_my(nn.Module):
         out, gate = x.split(int(x.size(1) / 2), 1)
         x = out * torch.sigmoid(gate)
 
-        output = self.out(x)  # 调用了上面的方法：nn.AdaptiveAvgPool1d(1)  # 自适应均值池化层
-        output = output.squeeze()  # 移除数组中维度为1的维度 例如：(1,3,1)==>(3,)
+        output = self.out(x)  
+        output = output.squeeze()  
 
-        output1 = self.layer1(output)  # 第一个 full-connect 得到 均值u
-        output2 = self.layer2(output)  # 第二个 full-connect 得到 对数的方差 log δ^2
-        output = self.reparametrize(output1, output2)  # 重参数技巧：z = u + δ * α
+        output1 = self.layer1(output)  
+        output2 = self.layer2(output)  
+        output = self.reparametrize(output1, output2)  
         return output, output1, output2
 
 class decoder(nn.Module):
@@ -143,9 +138,9 @@ class net(nn.Module):
         self.decoder1 = decoder(hp.max_smi_len, NUM_FILTERS, FILTER_LENGTH1, hp.charsmiset_size)
         self.decoder2 = decoder(hp.max_seq_len, NUM_FILTERS, FILTER_LENGTH2, hp.charseqset_size)
     def forward(self, x, y, hp, NUM_FILTERS, FILTER_LENGTH1, FILTER_LENGTH2):
-        x_init = Variable(x.long()).cuda()  # 对模型和相应的数据进行.cuda()处理;就可以将内存中的数据复制到GPU的显存中去
+        x_init = Variable(x.long()).cuda()  
         x = self.embedding1(x_init)
-        x_embedding = x.permute(0, 2, 1)  # # 将tensor的维度换位
+        x_embedding = x.permute(0, 2, 1)  
         y_init = Variable(y.long()).cuda()
         y = self.embedding2(y_init)
         y_embedding = y.permute(0, 2, 1)
@@ -181,7 +176,7 @@ class net_reg(nn.Module):
     def forward(self, A, B):
         A = self.reg1(A)
         B = self.reg2(B)
-        x = torch.cat((A, B), 1)  # 将两个张量拼接，默认是0：行拼接
+        x = torch.cat((A, B), 1)  
         x = self.reg(x)
         return x
 
@@ -217,7 +212,7 @@ class net_reg_my(nn.Module):
         B = self.atten(B)
         # A = self.reg1(A)
         # B = self.reg2(B)
-        x = torch.cat((A, B), 1)  # 将两个张量拼接，默认是0：行拼接
+        x = torch.cat((A, B), 1)  
         x = self.reg(x)
         np.savetxt('x.txt',np.array(x.cpu().detach().numpy()))
         if(hp.classify == 1):

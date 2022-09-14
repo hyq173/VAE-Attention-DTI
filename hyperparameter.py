@@ -5,14 +5,14 @@ class HyperParameter():
         self.smi_window_lengths = 5
         self.seq_window_lengths = 7
         self.lamda = -3
-        self.num_epoch = 100*3 # 多分类1000
+        self.num_epoch = 100*3 # multi-classification 1000
         self.batch_size = 128*2
         self.max_smi_len = 100
         self.max_seq_len = 1000
         self.charsmiset_size = 64
         self.charseqset_size = 25
-        self.earlyStop = 30 # 30次acc找不到最大值停止程序 50针对多分类
-        self.lr = 0.001*0.1 # *0.1 针对多分类
+        self.earlyStop = 30 # 30 times ACC cannot find the maximum value to stop the program ; 50: for multiple categories
+        self.lr = 0.001*0.1 # *0.1: for multiple categories
         self.classify = 5
         self.davis_labels = [0, 1, 2, 3, 4]  # [0, 1, 2, 3, 4, 5, 6]
         self.sub = 'bindingDB'

@@ -24,7 +24,7 @@ CHARPROTLEN = 25  #char protein set
 def one_hot_smiles(line, MAX_SMI_LEN, smi_ch_ind):
     X = np.zeros((MAX_SMI_LEN, len(smi_ch_ind)))  # +1
 
-    # 将一个可遍历的数据对象(如列表、元组或字符串)组合为一个索引序列，同时列出数据和数据下标
+  
     # seasons = ['Spring', 'Summer', 'Fall', 'Winter'] ==> list(enumerate(seasons)) ==> [(0, 'Spring'), (1, 'Summer'), (2, 'Fall'), (3, 'Winter')]
     for i, ch in enumerate(line[:MAX_SMI_LEN]):
         X[i, (smi_ch_ind[ch] - 1)] = 1
@@ -36,7 +36,7 @@ def one_hot_sequence(line, MAX_SEQ_LEN, smi_ch_ind):
         X[i, (smi_ch_ind[ch]) - 1] = 1
     return X
 
-# 传入的dict: 是有序的字典，[('CHEMBL230654', 'CCCC1=C(NC=N1)CNC2=CC(=C3C(=C2)C(=C(C=N3)C#N)NC4=CC(=C(C=C4)F)Cl)Cl'),(),()...]
+# [('CHEMBL230654', 'CCCC1=C(NC=N1)CNC2=CC(=C3C(=C2)C(=C(C=N3)C#N)NC4=CC(=C(C=C4)F)Cl)Cl'),(),()...]
 def orderdict_list(dict):
     x = []
     for key in dict.keys():
@@ -81,8 +81,8 @@ def read_dataset(hp, sub, dataset):
     protein_vocab = [i.strip() for i in open(os.path.join(hp.dataset_path,sub,'protein.vocab'), 'r').readlines()]
     with open(os.path.join(hp.dataset_path,sub,'protein.repr'), 'r') as f:
         for line in f:
-            pro = [protein_vocab[int(i)] for i in line.rstrip('\n').split()]  # 去掉回车、去掉空格
-            pro = ''.join(pro)  # 列表转为字符串
+            pro = [protein_vocab[int(i)] for i in line.rstrip('\n').split()]  
+            pro = ''.join(pro)  
             protein_repr.append(pro)
     pos_edge = [i.strip().split(',')[1::2] for i in open(os.path.join(hp.dataset_path,sub,'edges.pos'), 'r').readlines()]
     neg_edge = [i.strip().split(',')[1::2] for i in open(os.path.join(hp.dataset_path,sub,'edges.neg'), 'r').readlines()]

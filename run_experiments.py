@@ -32,15 +32,15 @@ def weights_init(model):
     for m in model.modules():
         if isinstance(m, nn.Linear):
             init.xavier_normal_(m.weight.data)
-        if isinstance(m, nn.BatchNorm1d):  # 批量norm
+        if isinstance(m, nn.BatchNorm1d):  #  batch norm
             init.constant_(m.weight.data, 1)
             init.constant_(m.bias.data, 0)
         if isinstance(m, nn.LSTM):
             init.orthogonal_(m.all_weights[0][0])
             init.orthogonal_(m.all_weights[0][1])
         if isinstance(m, nn.Conv1d):
-            init.xavier_normal_(m.weight.data)  # 参数初始化
-            m.bias.data.fill_(0)  # bias置为0
+            init.xavier_normal_(m.weight.data)  # param init
+            m.bias.data.fill_(0)  # bias = 0
 
 def m_focal_loss(pred, target):
     prob = pred.clamp(min=0.0001, max=1.0).cuda()
@@ -66,18 +66,18 @@ def train(train_loader, model, hp, NUM_FILTERS, FILTER_LENGTH1, FILTER_LENGTH2, 
             drug_SMILES = torch.Tensor(drug_SMILES)
             target_protein = torch.Tensor(target_protein)
             affinity = torch.Tensor(affinity)
-            optimizer.zero_grad()  # optimizer.zero_grad()意思是把梯度置零
+            optimizer.zero_grad()  # optimizer.zero_grad()
 
             affinity = Variable(affinity).cuda()
             pre_affinity, new_drug, new_target, drug, target, mu_drug, logvar_drug, mu_target, logvar_target = model(
                 drug_SMILES, target_protein, hp, NUM_FILTERS, FILTER_LENGTH1, FILTER_LENGTH2)
             np.savetxt('pre_affinity.txt',np.array(pre_affinity.cpu().detach().numpy()))
             if hp.classify == 1:
-                loss_affinity = loss_func(pre_affinity, affinity)  # 分类误差
+                loss_affinity = loss_func(pre_affinity, affinity)  # loss
             else:
                 loss_affinity = m_focal_loss(pre_affinity, affinity)
-            loss_drug = loss_f(new_drug, drug, mu_drug, logvar_drug)  # drug的重构误差
-            loss_target = loss_f(new_target, target, mu_target, logvar_target)  # target的重构误差 交叉熵Loss+KLD散度
+            loss_drug = loss_f(new_drug, drug, mu_drug, logvar_drug)  # reconstruction error of drug
+            loss_target = loss_f(new_target, target, mu_target, logvar_target)  # [reconstruction error of target] [cross entropy] [Loss+KLD divergence]
             loss = loss_affinity + 10 ** lamda * (loss_drug + hp.max_smi_len / hp.max_seq_len * loss_target)
             epoch_loss.append(loss.cpu().detach().numpy())
             if hp.classify == 1:
@@ -91,8 +91,8 @@ def train(train_loader, model, hp, NUM_FILTERS, FILTER_LENGTH1, FILTER_LENGTH2, 
                 auc = mul_AUC(pre_affinity.cpu().detach().numpy(), affinity.cpu().detach().numpy(), hp)
             epoch_acc.append(acc)
             epoch_auc.append(auc)
-            loss.backward()  # 反向传播，计算当前梯度
-            optimizer.step()  # 根据梯度更新网络参数
+            loss.backward()  # Back propagation to calculate the current gradient
+            optimizer.step()  # Update the network parameters according to the gradient
             bi_classify_loss = loss_affinity.item()
             t.set_postfix(train_total_loss=loss.item(), bi_classify_loss=bi_classify_loss, epochind=epochind, lr=optimizer.param_groups[0]['lr'])
         visual_log_train(writer, np.mean(np.array(epoch_acc)), np.mean(np.array(epoch_auc)), np.mean(np.array(epoch_loss)), epochind)
@@ -100,8 +100,6 @@ def train(train_loader, model, hp, NUM_FILTERS, FILTER_LENGTH1, FILTER_LENGTH2, 
     return model
 
 def test(model, valid_loader, hp, NUM_FILTERS, FILTER_LENGTH1, FILTER_LENGTH2, save_result):
-    #  model.eval()  ：不启用 BatchNormalization 和 Dropout，保证BN和dropout不发生变化，
-    # pytorch框架会自动把BN和Dropout固定住，不会取平均，而是用训练好的值，不然的话，一旦test的batch_size过小，很容易就会被BN层影响结果。
     model.eval()
     affinities = []
     pre_affinities = []

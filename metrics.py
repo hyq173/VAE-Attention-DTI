@@ -13,7 +13,7 @@ def deal_data(Y_pre, Y):
             Y_pre_S.append(ind)
     return np.array(Y_pre_S), np.array(Y_S)
 '''
-最后的维度是1,sigmod
+Dimension is 1,sigmod
 '''
 def ACC_1(Y_pre, Y):
     Y_pre = [1 if i >= 0.5 else 0 for i in Y_pre]
@@ -42,7 +42,7 @@ def get_all_metrics_1(Y_pre, Y):
     f1 = F1_1(Y_pre, Y)
     return acc, auc, precision, recall, f1
 '''
-最后的维度是2,softmax
+Dimension is 2,softmax
 '''
 def ACC_2(Y_pre, Y):
     Y_pre, Y = deal_data(Y_pre, Y)
@@ -77,7 +77,7 @@ def get_all_metrics_2(Y_pre, Y):
     f1 = F1_2(Y_pre, Y)
     return acc, auc, precision, recall, f1
 '''
-多分类
+multi-classification
 '''
 def mul_ACC(Y_pre, Y):
     Y_pre, Y = deal_data(Y_pre, Y)

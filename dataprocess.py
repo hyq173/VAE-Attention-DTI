@@ -8,7 +8,7 @@ def process_bindingDB():
             for line in f: chem.append(line.rstrip('\n'))
         with open(os.path.join(r'data/bindingDB',sub,'chem.repr'), 'rU') as f:
             for line in f: chem_repr.append(line.rstrip('\n'))
-        drug = dict(zip(chem, chem_repr))  # 等长列表转字典
+        drug = dict(zip(chem, chem_repr))  # Isometric list to dictionary
         save_data(os.path.join('data/bindingDB',sub,'ligands_iso.txt'),drug)
 
         protein = []
@@ -18,14 +18,14 @@ def process_bindingDB():
         protein_vocab = [i.strip() for i in open(os.path.join('data/bindingDB',sub, 'protein.vocab'), 'r').readlines()]
         with open(os.path.join('data/bindingDB',sub,'protein.repr'), 'r') as f:
             for line in f:
-                pro = [protein_vocab[int(i)] for i in line.rstrip('\n').split()]  # 去掉回车、去掉空格
-                pro = ''.join(pro)  # 列表转为字符串
+                pro = [protein_vocab[int(i)] for i in line.rstrip('\n').split()]  
+                pro = ''.join(pro)  
                 protein_repr.append(pro)
-        proteins = dict(zip(protein, protein_repr))  # 登场列表转字典
+        proteins = dict(zip(protein, protein_repr))  
         save_data(os.path.join('data/bindingDB',sub,'proteins.txt'), proteins)
 
         # '''
-        # 处理边
+        # Processing edge
         # '''
         # posEdge = [i.strip().split(',')[1::2] for i in open(os.path.join('data/bindingDB', sub, 'edges.pos'), 'r').readlines()]
         # negEdge = [i.strip().split(',')[1::2] for i in open(os.path.join('data/bindingDB', sub, 'edges.neg'), 'r').readlines()]

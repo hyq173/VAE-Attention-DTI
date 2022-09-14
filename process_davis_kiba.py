@@ -9,8 +9,8 @@ from hyperparameter import *
 def read_davis_kiba(hp):
     ligands = json.load(open(hp.dataset_path + "/ligands_iso.txt"), object_pairs_hook=OrderedDict)
     proteins = json.load(open(hp.dataset_path + "/proteins.txt"), object_pairs_hook=OrderedDict)
-    ligands = orderdict_list(ligands)  # 拿到的是value值
-    proteins = orderdict_list(proteins)  # 拿到的是value值
+    ligands = orderdict_list(ligands)  # value
+    proteins = orderdict_list(proteins)  # value
     if 'davis' in hp.dataset_path:
         affinities = pd.read_csv(hp.dataset_path + '/interaction.txt', sep='\s+', header=None, encoding='latin1')
         affinities = -(np.log10(affinities / (math.pow(10, 9))))
@@ -37,7 +37,7 @@ def get_avg_var_davis_kiba(hp, label_row_inds, label_col_inds):
         var = np.var(tem)
     return mean, var
 
-# 0-4:5类
+# 0-4
 def get_classify_davis(hp, dataset, ind, Y, label_row_inds, label_col_inds, mean, var, count):
     Y_value = pd.Series(Y[label_row_inds[ind]][label_col_inds[ind]])
     if hp.sub == 'davis':

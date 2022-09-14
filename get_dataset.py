@@ -1,5 +1,5 @@
 '''
-封装数据到pkl文件中，方便下次读取
+Encapsulate data into PKL files for next read
 '''
 import pickle
 from process_human_cele import *
