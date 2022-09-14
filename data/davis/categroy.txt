@@ -1,0 +1,33 @@
+Davis：30056 [5, 10.796]
+[mean - 1 * var, mean + 1 * var] : 25533
+[mean - 2 * var, mean + 2 * var] : 2179
+[mean - 3 * var, mean + 3 * var] : 1217
+[mean - 4 * var, mean + 4 * var] : 725
+[mean - 5 * var, mean + 5 * var] : 302
+[mean - 6 * var, mean + 6 * var] : 80
+                           other : 20
+KIBA：118254 [10, 17.2]
+[mean - 2 * var, mean + 2 * var] : 115180
+[mean - 4 * var, mean + 4 * var] : 3056
+[mean - 6 * var, mean + 6 * var] : 5
+                           other : 13
+
+[mean - 1 * var, mean + 1 * var] : 93084
+[mean - 2 * var, mean + 2 * var] : 13642
+[mean - 3 * var, mean + 3 * var] : 7465
+[mean - 4 * var, mean + 4 * var] : 2811
+[mean - 5 * var, mean + 5 * var] : 1024
+[mean - 6 * var, mean + 6 * var] : 193
+                           other : 35
+
+[mean - 1 * var, mean + 1 * var] : 93084
+[mean - 2 * var, mean + 2 * var] : 13642
+[mean - 3 * var, mean + 3 * var] : 7465
+[mean - 4 * var, mean + 4 * var] : 2811
+                          other  : 1252
+
+
+davis的数据分布：
+[24578.  3021.  1519.   698.   210.    30.]
+kiba的数据分布：
+[5 731 7299 85097 14896 7211 2576 409 15 2]
